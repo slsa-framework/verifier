@@ -9,6 +9,7 @@ integration tests.
 | `plain/v02-build.intoto.json` | `https://slsa.dev/provenance/v0.2` |
 | `plain/v1-build.intoto.json` | `https://slsa.dev/provenance/v1` |
 | `plain/source.intoto.json` | `https://github.com/slsa-framework/slsa-source-poc/source-provenance/v1-draft` |
+| `plain/source-legacy.intoto.json` | v1-draft as sourcetool wrote it before v0.7.0: only `CONTINUITY_ENFORCED`, `TAG_HYGIENE` and `PROVENANCE_AVAILABLE` |
 | `plain/gha-generic-v02-tag.intoto.json` | v0.2, generic generator, tag push (`refs/tags/v1.5.0`) |
 | `plain/gha-go-v02-branch.intoto.json` | v0.2, Go builder, branch build (`refs/heads/main`, schedule) |
 | `plain/gha-generic-v02-workflow-dispatch.intoto.json` | v0.2, generic generator, `workflow_dispatch` with inputs |
@@ -32,6 +33,7 @@ not intended to look like real-world provenance produced by a builder.
 | File | Predicate type |
 | --- | --- |
 | `bundle/source-provenance.sigstore.json` | `https://github.com/slsa-framework/slsa-source-poc/source-provenance/v1-draft` |
+| `bundle/source-provenance-legacy.sigstore.json` | `https://github.com/slsa-framework/slsa-source-poc/source-provenance/v1-draft`, legacy control names |
 | `bundle/source-vsa.sigstore.json` | `https://slsa.dev/verification_summary/v1` |
 
 Real-world bundles produced by the official SLSA source-actions workflow for
@@ -39,3 +41,8 @@ commit `b797d53` of `github.com/puerco/lab`: the source provenance for
 `refs/heads/master` and the VSA the workflow issued for it. Tests parse them
 and exercise the statement paths offline; verifying their signatures needs
 the Sigstore trust root (TUF) and is left to the signer library's own tests.
+
+The legacy provenance bundle is the note of commit `60b1dba` of
+`github.com/openvex/go-vex`, issued by the same workflow running sourcetool
+v0.6.2, which listed only three controls under their pre-v0.7.0 names. Its
+VSA rated the commit SLSA Source L3.

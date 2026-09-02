@@ -9,12 +9,17 @@ description: |
   control as active before the provenance was issued. Required for
   SLSA Source L2 — the source control system preserves the full
   history of changes to protected branches.
+  Provenance issued by sourcetool before v0.7.0 names none of the
+  SLSA_SOURCE_* controls. For a repository hosted on GitHub such legacy
+  provenance satisfies this control, which is inherent to the platform.
 checks:
   - predicateType: https://github.com/slsa-framework/slsa-source-poc/source-provenance/v1-draft
     expression: >-
       predicate.controls.exists(c, c.name == "SLSA_SOURCE_SCS_HISTORY"
       && has(c.since) && c.since <= predicate.createdOn
       && (!('enforced_since' in params) || c.since <= timestamp(string(params.enforced_since))))
+      || (!predicate.controls.exists(c, c.name.startsWith("SLSA_SOURCE_"))
+      && (predicate.repoUri.startsWith("https://github.com/") || predicate.repoUri.startsWith("git+https://github.com/")))
   - predicateType: https://github.com/slsa-framework/source-tool/source-provenance/v1
     expression: >-
       predicate.controls.exists(c, c.name == "SLSA_SOURCE_SCS_HISTORY"
