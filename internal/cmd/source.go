@@ -21,16 +21,21 @@ import (
 	"github.com/slsa-framework/verifier/pkg/subject"
 )
 
-// officialSourceIssuer and officialSourceSANs identify the official
-// SLSA source-actions workflow that signs source provenance
-// attestations (the legacy slsa-source-poc SAN is accepted for
-// attestations issued before the workflow moved). Verifying against
-// them is opt-in via --official.
+// officialSourceIssuer is the OIDC issuer of the certificates GitHub
+// Actions workflows sign with.
 const officialSourceIssuer = "https://token.actions.githubusercontent.com"
 
-var officialSourceSANs = []string{
-	"https://github.com/slsa-framework/source-actions/.github/workflows/compute_slsa_source.yml@refs/heads/main",
-	"https://github.com/slsa-framework/slsa-source-poc/.github/workflows/compute_slsa_source.yml@refs/heads/main",
+// officialSourceSigners are the identity specs of the official SLSA
+// source workflow that signs source provenance attestations. The
+// workflow lives in slsa-framework/actions and its callers pin it to a
+// release digest or tag, so its identity is matched up to the ref. The
+// identities of the repositories that hosted the workflow before, where
+// it always ran from main, are accepted for attestations issued while
+// it lived there. Verifying against them is opt-in via --official.
+var officialSourceSigners = []string{
+	"sigstore(identityMatch=prefix)::" + officialSourceIssuer + "::https://github.com/slsa-framework/actions/.github/workflows/compute_slsa_source.yml@",
+	"sigstore::" + officialSourceIssuer + "::https://github.com/slsa-framework/source-actions/.github/workflows/compute_slsa_source.yml@refs/heads/main",
+	"sigstore::" + officialSourceIssuer + "::https://github.com/slsa-framework/slsa-source-poc/.github/workflows/compute_slsa_source.yml@refs/heads/main",
 }
 
 // sourceOptions composes the OptionsSets the source command exposes. The
@@ -87,8 +92,8 @@ type sourceOptions struct {
 	// enforced_since control param.
 	Since string
 
-	// Official toggles verification against the official SLSA
-	// source-actions signing identity. Implies --require-signatures.
+	// Official toggles verification against the official SLSA source
+	// workflow signing identity. Implies --require-signatures.
 	Official bool
 
 	// Verbose toggles inclusion of skipped controls and control titles in
@@ -192,10 +197,8 @@ func (o *sourceOptions) Validate() error {
 		}
 	}
 	if o.Official {
-		for _, san := range officialSourceSANs {
-			id, err := sapi.NewIdentityFromSpec(
-				fmt.Sprintf("sigstore::%s::%s", officialSourceIssuer, san),
-			)
+		for _, spec := range officialSourceSigners {
+			id, err := sapi.NewIdentityFromSpec(spec)
 			if err != nil {
 				errs = append(errs, fmt.Errorf("building official identity: %w", err))
 				continue
@@ -288,7 +291,8 @@ content alone.
 The attestation may be supplied as a plain in-toto statement, a DSSE
 envelope (signed with one or more keys via --key), or a Sigstore
 bundle. Passing --official requires the attestation to be signed by
-the official SLSA source-actions workflow.
+the official SLSA source workflow, at any of the repositories that have
+hosted it.
 
 The verification passes when the attestation reaches the level given
 with --level (default 1), controls above it still run and determine

@@ -17,9 +17,13 @@ import (
 )
 
 const (
-	githubIssuer   = "https://token.actions.githubusercontent.com"
-	sourceActions  = "https://github.com/slsa-framework/source-actions"
-	sourceWorkflow = sourceActions + "/.github/workflows/compute_slsa_source.yml"
+	githubIssuer    = "https://token.actions.githubusercontent.com"
+	sourceActions   = "https://github.com/slsa-framework/source-actions"
+	sourceWorkflow  = sourceActions + "/.github/workflows/compute_slsa_source.yml"
+	slsaActions     = "https://github.com/slsa-framework/actions"
+	currentWorkflow = slsaActions + "/.github/workflows/compute_slsa_source.yml"
+	sourcePoc       = "https://github.com/slsa-framework/slsa-source-poc"
+	pocWorkflow     = sourcePoc + "/.github/workflows/compute_slsa_source.yml"
 )
 
 func githubSigner(subject string) *sapi.Identity {
@@ -76,12 +80,37 @@ func TestVerifierSigners(t *testing.T) {
 	assert.False(t, exact.MatchesSigner(githubSigner(sourceActions+"/.github/workflows/other.yml@refs/tags/v1.2.3")))
 }
 
+func TestEmbeddedRegistry(t *testing.T) {
+	t.Parallel()
+	r, err := verifiers.LoadEmbedded()
+	require.NoError(t, err)
+	assert.Equal(t, 3, r.Len())
+
+	// The current workflow is pinned by its callers to a digest or a
+	// tag, so any ref is its signer.
+	current := r.Lookup(slsaActions)
+	require.NotNil(t, current)
+	for _, ref := range []string{"dea965cdca5e0cb422bf7b2653c9d15f678ad01c", "refs/tags/v0.1.0", "refs/heads/main"} {
+		assert.True(t, current.AllowsSigner(githubSigner(currentWorkflow+"@"+ref)), ref)
+	}
+	assert.False(t, current.AllowsSigner(githubSigner(slsaActions+"/.github/workflows/release.yaml@refs/heads/main")), "another workflow of the repository")
+	assert.False(t, current.AllowsSigner(githubSigner(slsaActions+"-fork/.github/workflows/compute_slsa_source.yml@refs/heads/main")), "a lookalike repository")
+	assert.False(t, current.AllowsSigner(githubSigner(sourceWorkflow+"@refs/heads/main")), "the legacy workflow does not sign for the current id")
+	assert.False(t, current.AllowsSigner(&sapi.Identity{Sigstore: &sapi.IdentitySigstore{Issuer: "https://accounts.google.com", Identity: currentWorkflow + "@refs/heads/main"}}))
+
+	// The legacy workflows only ever ran from main
+	for id, workflow := range map[string]string{sourceActions: sourceWorkflow, sourcePoc: pocWorkflow} {
+		legacy := r.Lookup(id)
+		require.NotNil(t, legacy, id)
+		assert.True(t, legacy.AllowsSigner(githubSigner(workflow+"@refs/heads/main")), id)
+		assert.False(t, legacy.AllowsSigner(githubSigner(workflow+"@refs/tags/v0.1.0")), id)
+		assert.False(t, legacy.AllowsSigner(githubSigner(currentWorkflow+"@refs/heads/main")), id)
+	}
+	assert.Nil(t, r.Lookup("https://verify.example.com"))
+}
+
 func TestRegistry(t *testing.T) {
 	t.Parallel()
-	embedded, err := verifiers.LoadEmbedded()
-	require.NoError(t, err)
-	assert.Equal(t, 0, embedded.Len(), "no verifiers are embedded yet")
-
 	r, err := verifiers.New(
 		&verifiers.Verifier{ID: "https://github.com/", IDMatch: builders.IDMatchPrefix, Issuer: githubIssuer, Title: "platform"},
 		&verifiers.Verifier{ID: sourceActions, Issuer: githubIssuer, Title: "source-actions"},

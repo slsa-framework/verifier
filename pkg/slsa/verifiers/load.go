@@ -33,8 +33,8 @@ func Parse(data []byte) (*Registry, error) {
 	return New(f.Verifiers...)
 }
 
-// LoadEmbedded loads the verifiers compiled into the binary. There are
-// none yet: the registry is populated from files and flags.
+// LoadEmbedded loads the verifiers compiled into the binary: the
+// official SLSA source workflow under its current and legacy ids.
 func LoadEmbedded() (*Registry, error) {
 	return loadFS(registryFS, registryRoot)
 }

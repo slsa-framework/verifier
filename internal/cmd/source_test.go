@@ -11,6 +11,7 @@ import (
 	"strings"
 	"testing"
 
+	sapi "github.com/carabiner-dev/signer/api/v1"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -59,9 +60,28 @@ func TestSourceOptionsOfficialAddsIdentities(t *testing.T) {
 		Official:        true,
 	}
 	require.NoError(t, opts.Validate())
-	assert.Len(t, opts.Signers, 2, "official flag should add both known SANs")
+	assert.Len(t, opts.Signers, 3, "official flag should add the current and both legacy identities")
 	assert.True(t, opts.shared.RequireSignatures, "official implies --require-signatures")
 	assert.Equal(t, 1, opts.MinLevel)
+
+	// The current workflow is accepted at any ref, the legacy ones only from main
+	matches := func(subject string) bool {
+		signer := &sapi.Identity{Sigstore: &sapi.IdentitySigstore{Issuer: officialSourceIssuer, Identity: subject}}
+		for _, id := range opts.Signers {
+			if (&sapi.SignatureVerification{Identities: []*sapi.Identity{signer}}).MatchesIdentity(id) {
+				return true
+			}
+		}
+		return false
+	}
+	const currentWorkflow = "https://github.com/slsa-framework/actions/.github/workflows/compute_slsa_source.yml"
+	assert.True(t, matches(currentWorkflow+"@dea965cdca5e0cb422bf7b2653c9d15f678ad01c"))
+	assert.True(t, matches(currentWorkflow+"@refs/tags/v0.1.0"))
+	assert.True(t, matches("https://github.com/slsa-framework/source-actions/.github/workflows/compute_slsa_source.yml@refs/heads/main"))
+	assert.True(t, matches("https://github.com/slsa-framework/slsa-source-poc/.github/workflows/compute_slsa_source.yml@refs/heads/main"))
+	assert.False(t, matches("https://github.com/slsa-framework/source-actions/.github/workflows/compute_slsa_source.yml@refs/tags/v0.1.0"))
+	assert.False(t, matches("https://github.com/slsa-framework/actions-fork/.github/workflows/compute_slsa_source.yml@refs/heads/main"))
+	assert.False(t, matches("https://github.com/slsa-framework/actions/.github/workflows/release.yaml@refs/heads/main"))
 }
 
 func TestParseSinceDate(t *testing.T) {

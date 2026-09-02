@@ -9,9 +9,12 @@ them per invocation — `--verifier <id>=<signer spec>` — and the
 without a signer takes the signer the registry binds to that id.
 
 It is the counterpart of the [builder registry](builder-registry.md)
-for VSAs, with the same file shape. Nothing is embedded yet: the
-verifier ships no known VSA issuers, so bindings come from `--verifier`
-and from registry files passed with `--verifiers`.
+for VSAs, with the same file shape. The verifier embeds the official
+SLSA source workflow, which issues the VSAs the SLSA source tool stores
+in git notes, under its current id `https://github.com/slsa-framework/actions`
+and the ids of the repositories that hosted it before. Bindings for any
+other verifier come from `--verifier` and from registry files passed
+with `--verifiers`, merged over the embedded entries.
 
 ## How a bound verifier is checked
 
@@ -29,14 +32,15 @@ matched.
 ```yaml
 verifiers:
   # The SLSA source tool's workflow issues a VSA for every commit it
-  # attests. Its id is the repository; the certificate names the
-  # workflow that ran, from main, so the ref policy stays "any".
-  - id: https://github.com/slsa-framework/source-actions
-    title: SLSA source-actions
+  # attests. Its id is the repository hosting the workflow; the
+  # certificate names the workflow that ran and the digest or tag its
+  # caller pinned it to, so the ref policy stays "any".
+  - id: https://github.com/slsa-framework/actions
+    title: SLSA source workflow
     description: |
       VSAs issued by the SLSA source tool running as the official
-      source-actions workflow.
-    signer: sigstore(identityMatch=prefix)::https://token.actions.githubusercontent.com::https://github.com/slsa-framework/source-actions/.github/workflows/compute_slsa_source.yml@
+      compute_slsa_source.yml workflow.
+    signer: sigstore(identityMatch=prefix)::https://token.actions.githubusercontent.com::https://github.com/slsa-framework/actions/.github/workflows/compute_slsa_source.yml@
     ref: any
 
   # A verifier of your own, signed with a workload identity.
@@ -51,7 +55,7 @@ verifiers:
 | `title`, `description` | no | For people. |
 | `issuer` | one of `issuer`/`signer` | OIDC issuer of the signing certificate. With `signer` unset, the signer is derived as any sigstore identity from `issuer` whose subject starts with `id` followed by `/` — every workflow of the repository the id names. Naming the workflow with `signer` is the stronger binding. |
 | `signer` | one of `issuer`/`signer` | A full identity spec: `sigstore::<issuer>::<subject>`, `sigstore(identityMatch=prefix)::…`, `key::<type>::<id>`, `spiffe://…`. |
-| `ref` | no | `any` (default) or `semver-tag`: the `@ref` in the signer's subject must be `refs/tags/vX.Y.Z`. Use it for verifiers that run from releases; a workflow invoked from a branch, as source-actions is, needs `any`. |
+| `ref` | no | `any` (default) or `semver-tag`: the `@ref` in the signer's subject must be `refs/tags/vX.Y.Z`. Use it for verifiers that run from releases; a workflow its callers pin to a digest, as the SLSA source workflow is, needs `any`. |
 
 Later entries with the same `id` and `idMatch` replace earlier ones; a
 directory of files merges in path order.
@@ -59,21 +63,21 @@ directory of files merges in path order.
 ## Command line
 
 ```
-slsa-verifier vsa --verifiers ci/verifiers.yaml \
-    --verifier https://github.com/slsa-framework/source-actions \
+slsa-verifier vsa --verifier https://github.com/slsa-framework/actions \
     --level SLSA_SOURCE_LEVEL_1 commit.vsa.jsonl
 ```
 
-`--verifier id=<spec>` still binds explicitly and overrides the
-registry for that id. Binding a verifier, by flag or registry, implies
-`--require-signatures`.
+`--verifiers ci/verifiers.yaml` merges a registry file or directory
+over the embedded registry, and `--verifier id=<spec>` still binds
+explicitly and overrides the registry for that id. Binding a verifier,
+by flag or registry, implies `--require-signatures`.
 
 ## Go
 
 ```go
-reg, err := verifiers.Load("ci/verifiers.yaml")      // or verifiers.LoadEmbedded(), empty today
+reg, err := verifiers.LoadEmbedded()                 // or verifiers.Load("ci/verifiers.yaml")
 res, err := attestation.New().VerifyVSA(ctx, env, &attestation.VSAOptions{
-    Verifiers: []attestation.VerifierBinding{{ID: "https://github.com/slsa-framework/source-actions"}},
+    Verifiers: []attestation.VerifierBinding{{ID: "https://github.com/slsa-framework/actions"}},
     Registry:  reg,
 })
 ```

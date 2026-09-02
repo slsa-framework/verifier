@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: Copyright 2026 The SLSA Authors
+# SPDX-License-Identifier: Apache-2.0
+#
+# The SLSA source tool issues a VSA for every commit it attests, running
+# as a reusable workflow on GitHub Actions. verifier.id names the
+# repository hosting the workflow; the certificate names the workflow that
+# ran and the ref it ran at.
+verifiers:
+  - id: https://github.com/slsa-framework/actions
+    title: SLSA source workflow
+    description: |
+      VSAs issued by the SLSA source tool running as the official
+      compute_slsa_source.yml workflow of slsa-framework/actions. Callers
+      pin the workflow to a release digest or tag, so the signer is
+      matched up to the ref and the ref policy stays "any".
+    signer: sigstore(identityMatch=prefix)::https://token.actions.githubusercontent.com::https://github.com/slsa-framework/actions/.github/workflows/compute_slsa_source.yml@
+    ref: any
+  - id: https://github.com/slsa-framework/source-actions
+    title: SLSA source-actions workflow (legacy)
+    description: |
+      VSAs issued while the workflow lived in slsa-framework/source-actions,
+      where it always ran from main.
+    signer: sigstore::https://token.actions.githubusercontent.com::https://github.com/slsa-framework/source-actions/.github/workflows/compute_slsa_source.yml@refs/heads/main
+  - id: https://github.com/slsa-framework/slsa-source-poc
+    title: SLSA source proof of concept workflow (legacy)
+    description: |
+      VSAs issued before the workflow was split out of the slsa-source-poc
+      repository, where it always ran from main.
+    signer: sigstore::https://token.actions.githubusercontent.com::https://github.com/slsa-framework/slsa-source-poc/.github/workflows/compute_slsa_source.yml@refs/heads/main

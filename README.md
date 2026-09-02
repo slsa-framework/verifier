@@ -43,7 +43,7 @@ key material, making a result *trustworthy* requires opting in.
 - **Who signed is not checked unless you say who you expect.** A verified
   signature proves the content is intact, not that the right party produced
   it. Use `--signer <spec>` (all subcommands), `--official` (`source`, the
-  SLSA source-actions workflow identity) or a per-verifier binding
+  official SLSA source workflow identity) or a per-verifier binding
   `--verifier <id>=<spec>` (`vsa`) to require a specific identity. Any of
   these implies `--require-signatures`.
 - **Claims inside an attestation are claims.** `builder.id`, `verifier.id`

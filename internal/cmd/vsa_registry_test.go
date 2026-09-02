@@ -45,11 +45,24 @@ func TestVSAVerifierRegistry(t *testing.T) {
 		return out.String() + "", runVSA(cmd, opts)
 	}
 
-	t.Run("without a registry the verifier is unbound", func(t *testing.T) {
+	t.Run("a verifier the embedded registry does not know is unbound", func(t *testing.T) {
 		t.Parallel()
-		_, err := run(t, "")
+		opts := &vsaOptions{shared: &sharedOptions{}, AttestationPath: note, VerifierSpecs: []string{"https://verify.example.com"}}
+		err := opts.Validate()
 		require.ErrorContains(t, err, "has no authorized signer")
 		assert.Contains(t, err.Error(), "--verifiers")
+	})
+	t.Run("the embedded registry binds the official SLSA source verifier", func(t *testing.T) {
+		t.Parallel()
+		opts := &vsaOptions{shared: &sharedOptions{}, AttestationPath: note, VerifierSpecs: []string{verifierID}}
+		require.NoError(t, opts.Validate())
+		assert.True(t, opts.shared.RequireSignatures, "a bound verifier requires signatures")
+		var out bytes.Buffer
+		cmd := &cobra.Command{}
+		cmd.SetOut(&out)
+		require.NoError(t, runVSA(cmd, opts))
+		assert.Contains(t, out.String(), "PASS")
+		assert.Contains(t, out.String(), "Signer is authorized")
 	})
 	t.Run("the registry binds the verifier", func(t *testing.T) {
 		t.Parallel()
