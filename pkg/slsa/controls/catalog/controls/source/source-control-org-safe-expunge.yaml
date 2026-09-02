@@ -6,17 +6,19 @@ id: source-control-org-safe-expunge
 title: Source Provenance Declares SLSA_SOURCE_ORG_SAFE_EXPUNGE
 description: |
   Asserts the source provenance lists the SLSA_SOURCE_ORG_SAFE_EXPUNGE
-  control as active before the provenance was issued. Required for SLSA
+  control (or its deprecated alias TAG_HYGIENE: sourcetool derives safe
+  expunge from protected refs, which legacy provenance reported as tag
+  hygiene) as active before the provenance was issued. Required for SLSA
   Source L2 — repository data may only be expunged through a deliberate
   administrative process, never by regular contributors.
 checks:
   - predicateType: https://github.com/slsa-framework/slsa-source-poc/source-provenance/v1-draft
     expression: >-
-      predicate.controls.exists(c, c.name == "SLSA_SOURCE_ORG_SAFE_EXPUNGE"
+      predicate.controls.exists(c, c.name in ["SLSA_SOURCE_ORG_SAFE_EXPUNGE", "TAG_HYGIENE"]
       && has(c.since) && c.since <= predicate.createdOn
       && (!('enforced_since' in params) || c.since <= timestamp(string(params.enforced_since))))
   - predicateType: https://github.com/slsa-framework/source-tool/source-provenance/v1
     expression: >-
-      predicate.controls.exists(c, c.name == "SLSA_SOURCE_ORG_SAFE_EXPUNGE"
+      predicate.controls.exists(c, c.name in ["SLSA_SOURCE_ORG_SAFE_EXPUNGE", "TAG_HYGIENE"]
       && has(c.since) && c.since <= predicate.createdOn
       && (!('enforced_since' in params) || c.since <= timestamp(string(params.enforced_since))))

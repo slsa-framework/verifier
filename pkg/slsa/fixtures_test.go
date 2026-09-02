@@ -84,6 +84,14 @@ func TestFixturesParseToExpectedProtoType(t *testing.T) {
 			},
 		},
 		{
+			name:        "source-legacy.intoto.json",
+			predicateID: eval.PredicateSourceProvenance,
+			wantPB: func(m proto.Message) bool {
+				_, ok := m.(*sourceprovenance.SourceProvenancePred)
+				return ok
+			},
+		},
+		{
 			name:        "tag.intoto.json",
 			predicateID: eval.PredicateTagProvenance,
 			wantPB: func(m proto.Message) bool {
@@ -558,6 +566,7 @@ func TestBundleFixturesParse(t *testing.T) {
 		predicateType string
 	}{
 		{"source-provenance.sigstore.json", "https://github.com/slsa-framework/slsa-source-poc/source-provenance/v1-draft"},
+		{"source-provenance-legacy.sigstore.json", "https://github.com/slsa-framework/slsa-source-poc/source-provenance/v1-draft"},
 		{"source-vsa.sigstore.json", "https://slsa.dev/verification_summary/v1"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -949,4 +958,139 @@ func TestSourceRepoMatchAcrossGenerators(t *testing.T) {
 			}
 		})
 	}
+}
+
+// controlStatus returns the status of the core control with id.
+func controlStatus(t *testing.T, res *slsa.Result, id string) slsa.Status {
+	t.Helper()
+	for _, cr := range res.CoreResults {
+		if cr.ID == id {
+			return cr.Status
+		}
+	}
+	t.Fatalf("control %q not in the results", id)
+	return ""
+}
+
+// TestVerifyLegacySourceFixture covers provenance issued by sourcetool
+// before v0.7.0, which listed only branch continuity, tag hygiene and
+// provenance under their old names. The platform controls are inferred
+// for a GitHub repository and the old names map to the controls
+// sourcetool derived from them, so it evaluates to the level sourcetool
+// computed at the time.
+func TestVerifyLegacySourceFixture(t *testing.T) {
+	t.Parallel()
+
+	stmt := loadFixture(t, "source-legacy.intoto.json")
+	v, err := slsa.New()
+	require.NoError(t, err)
+
+	res, err := v.Verify(
+		context.Background(),
+		stmt,
+		slsa.WithMinLevel(1),
+		slsa.WithParam("expected_source_repo", "https://github.com/example/repo"),
+		slsa.WithParam("expected_branch", "refs/heads/main"),
+	)
+	require.NoError(t, err)
+	assert.Equal(t, slsa.StatusPass, res.Status)
+	assert.Equal(t, 3, res.SLSALevel)
+	for _, id := range []string{
+		"source-control-org-scs", "source-control-scs-repo-id", "source-control-scs-identity",
+		"source-control-org-access-control", "source-control-org-safe-expunge",
+		"source-control-scs-continuity", "source-control-org-continuity",
+		"source-control-scs-protected-refs", "source-control-scs-provenance",
+	} {
+		assert.Equal(t, slsa.StatusPass, controlStatus(t, res, id), id)
+	}
+	assert.Equal(t, slsa.StatusFail, controlStatus(t, res, "source-control-scs-two-party-review"))
+
+	// An enforcement date before tag hygiene drops the controls derived
+	// from it: safe expunge at L2 and protected refs at L3.
+	res, err = v.Verify(
+		context.Background(),
+		stmt,
+		slsa.WithMinLevel(1),
+		slsa.WithParam("enforced_since", "2025-07-01T00:00:00Z"),
+	)
+	require.NoError(t, err)
+	assert.Equal(t, slsa.StatusPass, res.Status)
+	assert.Equal(t, 1, res.SLSALevel)
+	assert.Equal(t, slsa.StatusFail, controlStatus(t, res, "source-control-org-safe-expunge"))
+	assert.Equal(t, slsa.StatusFail, controlStatus(t, res, "source-control-scs-protected-refs"))
+	assert.Equal(t, slsa.StatusPass, controlStatus(t, res, "source-control-scs-continuity"))
+	// The inherent platform controls are not dated, they always hold
+	assert.Equal(t, slsa.StatusPass, controlStatus(t, res, "source-control-org-scs"))
+}
+
+// TestVerifyLegacySourceFixtureNotOnGitHub confirms the platform controls
+// are only inferred for repositories hosted on GitHub.
+func TestVerifyLegacySourceFixtureNotOnGitHub(t *testing.T) {
+	t.Parallel()
+
+	stmt := mutatedFixture(t, "source-legacy.intoto.json", func(predicate map[string]any) {
+		predicate["repoUri"] = "https://gitlab.com/example/repo"
+	})
+	v, err := slsa.New()
+	require.NoError(t, err)
+
+	res, err := v.Verify(context.Background(), stmt, slsa.WithMinLevel(1))
+	require.NoError(t, err)
+	assert.Equal(t, slsa.StatusFail, res.Status)
+	assert.Equal(t, 0, res.SLSALevel)
+	assert.Equal(t, slsa.StatusFail, controlStatus(t, res, "source-control-org-scs"))
+	// The mapped names still count
+	assert.Equal(t, slsa.StatusPass, controlStatus(t, res, "source-control-org-continuity"))
+}
+
+// TestVerifySourceFixtureMissingPlatformControlFails confirms nothing is
+// inferred for provenance that names the current controls: omitting a
+// platform control there is a statement, not a legacy artifact.
+func TestVerifySourceFixtureMissingPlatformControlFails(t *testing.T) {
+	t.Parallel()
+
+	stmt := mutatedFixture(t, "source.intoto.json", func(predicate map[string]any) {
+		controls, ok := predicate["controls"].([]any)
+		require.True(t, ok)
+		kept := []any{}
+		for _, c := range controls {
+			control, ok := c.(map[string]any)
+			require.True(t, ok)
+			if control["name"] != "SLSA_SOURCE_SCS_REPO_ID" {
+				kept = append(kept, c)
+			}
+		}
+		require.Len(t, kept, len(controls)-1)
+		predicate["controls"] = kept
+	})
+	v, err := slsa.New()
+	require.NoError(t, err)
+
+	res, err := v.Verify(context.Background(), stmt, slsa.WithMinLevel(1))
+	require.NoError(t, err)
+	assert.Equal(t, slsa.StatusFail, res.Status)
+	assert.Equal(t, 0, res.SLSALevel)
+	assert.Equal(t, slsa.StatusFail, controlStatus(t, res, "source-control-scs-repo-id"))
+	assert.Equal(t, slsa.StatusPass, controlStatus(t, res, "source-control-org-scs"))
+}
+
+// TestBundleFixtureLegacySourceProvenanceVerifies runs the source controls
+// over real-world legacy provenance: the go-vex commit attested by the
+// official workflow running sourcetool v0.6.2, which its VSA rates at L3.
+func TestBundleFixtureLegacySourceProvenanceVerifies(t *testing.T) {
+	t.Parallel()
+
+	stmt := loadBundleFixture(t, "source-provenance-legacy.sigstore.json").GetStatement()
+	v, err := slsa.New()
+	require.NoError(t, err)
+	res, err := v.Verify(
+		context.Background(),
+		stmt,
+		slsa.WithMinLevel(1),
+		slsa.WithParam("expected_source_repo", "https://github.com/openvex/go-vex"),
+		slsa.WithParam("expected_branch", "refs/heads/main"),
+	)
+	require.NoError(t, err)
+	assert.Equal(t, slsa.StatusPass, res.Status)
+	assert.Equal(t, 3, res.SLSALevel)
 }

@@ -6,18 +6,20 @@ id: source-control-org-continuity
 title: Source Provenance Declares SLSA_SOURCE_ORG_CONTINUITY
 description: |
   Asserts the source provenance lists the SLSA_SOURCE_ORG_CONTINUITY
-  control as active before the provenance was issued. Required for
+  control (or its deprecated alias CONTINUITY_ENFORCED, which sourcetool
+  reported before the org control existed and from which it derives it)
+  as active before the provenance was issued. Required for
   SLSA Source L3 — the organization commits to keeping the continuity
   controls enabled, so protections cannot be silently dropped and
   re-enabled.
 checks:
   - predicateType: https://github.com/slsa-framework/slsa-source-poc/source-provenance/v1-draft
     expression: >-
-      predicate.controls.exists(c, c.name == "SLSA_SOURCE_ORG_CONTINUITY"
+      predicate.controls.exists(c, c.name in ["SLSA_SOURCE_ORG_CONTINUITY", "CONTINUITY_ENFORCED"]
       && has(c.since) && c.since <= predicate.createdOn
       && (!('enforced_since' in params) || c.since <= timestamp(string(params.enforced_since))))
   - predicateType: https://github.com/slsa-framework/source-tool/source-provenance/v1
     expression: >-
-      predicate.controls.exists(c, c.name == "SLSA_SOURCE_ORG_CONTINUITY"
+      predicate.controls.exists(c, c.name in ["SLSA_SOURCE_ORG_CONTINUITY", "CONTINUITY_ENFORCED"]
       && has(c.since) && c.since <= predicate.createdOn
       && (!('enforced_since' in params) || c.since <= timestamp(string(params.enforced_since))))
