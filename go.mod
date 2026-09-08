@@ -1,13 +1,13 @@
 module github.com/slsa-framework/verifier
 
-go 1.26
+go 1.26.0
 
 require (
 	github.com/carabiner-dev/attestation v0.2.1
 	github.com/carabiner-dev/collector v0.3.14-0.20260902000614-441c3288a834
-	github.com/carabiner-dev/command v0.3.1
+	github.com/carabiner-dev/command v0.3.2
 	github.com/carabiner-dev/hasher v0.2.4
-	github.com/carabiner-dev/signer v0.6.2-0.20260901235141-7abffe0fc666
+	github.com/carabiner-dev/signer v0.6.2
 	github.com/fatih/color v1.19.0
 	github.com/google/cel-go v0.28.0
 	github.com/in-toto/attestation v1.2.0
@@ -62,15 +62,15 @@ require (
 	github.com/go-openapi/runtime v0.33.0 // indirect
 	github.com/go-openapi/runtime/server-middleware v0.33.0 // indirect
 	github.com/go-openapi/spec v0.22.9 // indirect
-	github.com/go-openapi/strfmt v0.27.0 // indirect
-	github.com/go-openapi/swag/conv v0.29.1 // indirect
+	github.com/go-openapi/strfmt v0.27.2 // indirect
+	github.com/go-openapi/swag/conv v0.29.2 // indirect
 	github.com/go-openapi/swag/fileutils v0.28.0 // indirect
 	github.com/go-openapi/swag/jsonutils v0.28.0 // indirect
 	github.com/go-openapi/swag/loading v0.28.0 // indirect
 	github.com/go-openapi/swag/mangling v0.28.0 // indirect
 	github.com/go-openapi/swag/pools v0.28.0 // indirect
 	github.com/go-openapi/swag/stringutils v0.28.0 // indirect
-	github.com/go-openapi/swag/typeutils v0.29.1 // indirect
+	github.com/go-openapi/swag/typeutils v0.29.2 // indirect
 	github.com/go-openapi/swag/yamlutils v0.28.0 // indirect
 	github.com/go-openapi/validate v0.26.3 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
