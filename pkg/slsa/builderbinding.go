@@ -132,7 +132,26 @@ func bindBuilder(registry *builders.Registry, known *builders.Builder, builderID
 			"%s signed the statement at %q, which is not a release tag (refs/tags/vX.Y.Z)", entry.Title, signerRef)}
 	}
 
-	if !entry.Delegated {
+	if entry.Observer {
+		// The observer's certificate records the workflow whose run it
+		// attested in the build config URI; builder.id must name that
+		// workflow, which proves it really ran.
+		observed := signer.GetSigstore().GetBuildConfigUri()
+		if observed == "" {
+			return &ControlResult{Status: StatusFail, Message: fmt.Sprintf(
+				"%s signed the statement but its certificate does not say which workflow's run it observed", entry.Title)}
+		}
+		builderBase, builderRef := builders.SplitRef(builderID)
+		observedBase, observedRef := builders.SplitRef(observed)
+		if builderBase != observedBase {
+			return &ControlResult{Status: StatusFail, Message: fmt.Sprintf(
+				"builder.id is %q but the certificate says %s observed the run of %q", builderID, entry.Title, observedBase)}
+		}
+		if builderRef != "" && observedRef != "" && builderRef != observedRef && !isCommitDigest(builderRef) {
+			return &ControlResult{Status: StatusFail, Message: fmt.Sprintf(
+				"builder.id names the workflow at %q but the certificate says its run was at %q", builderRef, observedRef)}
+		}
+	} else if !entry.Delegated {
 		// The builder named must be the signer's builder: the entry's
 		// id, or for a platform entry, the signer's own subject.
 		builderBase, builderRef := builders.SplitRef(builderID)
@@ -172,6 +191,9 @@ func bindBuilder(registry *builders.Registry, known *builders.Builder, builderID
 	msg := "signed by " + principal
 	if entry.Delegated {
 		msg += ", a delegator: builder.id names the delegated builder"
+	}
+	if entry.Observer {
+		msg += ", an observer: its certificate proves the workflow builder.id names ran"
 	}
 	return &ControlResult{Status: StatusPass, Message: msg}
 }

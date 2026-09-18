@@ -87,6 +87,11 @@ type Builder struct {
 	// proves the delegator ran, while builder.id names the delegated
 	// builder, which is not expected to equal the signer identity.
 	Delegated bool `yaml:"delegated,omitempty"`
+	// Observer marks a watcher that attests runs it observed: its
+	// certificate proves the observer ran, and builder.id must name the
+	// workflow the certificate's build config URI says the observer ran
+	// for, which proves that workflow really ran.
+	Observer bool `yaml:"observer,omitempty"`
 	// SourceRepositoryBound asserts the signing certificate's source
 	// repository is the repository the artifact was built from, so it
 	// can be compared with the expected source.
@@ -118,6 +123,12 @@ func (b *Builder) Validate() error {
 	}
 	if b.Signer == "" && b.Issuer == "" {
 		return fmt.Errorf("builder %q: set signer or issuer", b.ID)
+	}
+	if b.Observer && b.Delegated {
+		return fmt.Errorf("builder %q: observer and delegated are mutually exclusive", b.ID)
+	}
+	if b.Observer && b.IDMatch == IDMatchPrefix {
+		return fmt.Errorf("builder %q: an observer entry names its signer workflow exactly; prefix ids are not supported", b.ID)
 	}
 	id, err := sapi.NewIdentityFromSpec(b.SignerSpec())
 	if err != nil {

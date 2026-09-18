@@ -24,6 +24,8 @@ const (
 	trwSubject       = "https://github.com/slsa-framework/example-trw/.github/workflows/builder_high-perms_slsa3.yml@refs/tags/v1.10.0"
 	bcrSubject       = "https://github.com/bazel-contrib/publish-to-bcr/.github/workflows/publish.yaml@refs/tags/v0.0.1"
 	bndRelease       = "https://github.com/carabiner-dev/bnd/.github/workflows/release.yaml@refs/tags/v0.4.4"
+	attesterSubject  = "https://github.com/slsa-framework/actions/.github/workflows/attest_actions.yml@refs/heads/main"
+	attesterObserved = "https://github.com/slsa-framework/attester/.github/workflows/release.yaml@refs/tags/v0.1.0-rc.3"
 )
 
 // signedAs wraps a fixture statement with a synthetic verification record.
@@ -42,6 +44,14 @@ func verifiedBy(ids ...*sapi.Identity) *sapi.Verification {
 
 func githubIdentity(subject, sourceRepo string) *sapi.Identity {
 	return &sapi.Identity{Sigstore: &sapi.IdentitySigstore{Issuer: githubIssuer, Identity: subject, SourceRepositoryUri: sourceRepo}}
+}
+
+// observerIdentity is a githubIdentity whose certificate also records the
+// workflow whose run the signer observed (the build config URI).
+func observerIdentity(subject, sourceRepo, observed string) *sapi.Identity {
+	id := githubIdentity(subject, sourceRepo)
+	id.GetSigstore().BuildConfigUri = observed
+	return id
 }
 
 func googleIdentity(email string) *sapi.Identity {
@@ -131,6 +141,37 @@ func TestBuilderBinding(t *testing.T) {
 			name: "builder named at a commit, signed by another workflow", fixture: "tejolote-v1-tag.intoto.json",
 			verification: verifiedBy(githubIdentity("https://github.com/carabiner-dev/bnd/.github/workflows/tests.yaml@refs/tags/v0.4.4", "https://github.com/carabiner-dev/bnd")),
 			want:         slsa.StatusFail, wantMessage: "builder.id is",
+		},
+		{
+			// The attester (an observer) signed provenance for the workflow
+			// its certificate says it observed: builder.id is proven.
+			name: "observer signed for the workflow it observed", fixture: "attester-watcher-v1-tag.intoto.json",
+			verification: verifiedBy(observerIdentity(attesterSubject, "https://github.com/slsa-framework/attester", attesterObserved)),
+			source:       "github.com/slsa-framework/attester", want: slsa.StatusPass, wantMessage: "observer",
+		},
+		{
+			name: "observer certificate names another workflow", fixture: "attester-watcher-v1-tag.intoto.json",
+			verification: verifiedBy(observerIdentity(attesterSubject, "https://github.com/slsa-framework/attester",
+				"https://github.com/evil/repo/.github/workflows/release.yaml@refs/tags/v0.1.0-rc.3")),
+			want: slsa.StatusFail, wantMessage: "observed the run of",
+		},
+		{
+			name: "observer certificate names the workflow at another ref", fixture: "attester-watcher-v1-tag.intoto.json",
+			verification: verifiedBy(observerIdentity(attesterSubject, "https://github.com/slsa-framework/attester",
+				"https://github.com/slsa-framework/attester/.github/workflows/release.yaml@refs/heads/main")),
+			want: slsa.StatusFail, wantMessage: "its run was at",
+		},
+		{
+			// An older certificate without the build config extension
+			// cannot prove which run the observer attested.
+			name: "observer certificate without build config", fixture: "attester-watcher-v1-tag.intoto.json",
+			verification: verifiedBy(githubIdentity(attesterSubject, "https://github.com/slsa-framework/attester")),
+			want:         slsa.StatusFail, wantMessage: "does not say which workflow",
+		},
+		{
+			name: "observer certificate from another source repository", fixture: "attester-watcher-v1-tag.intoto.json",
+			verification: verifiedBy(observerIdentity(attesterSubject, "https://github.com/evil/repo", attesterObserved)),
+			source:       "github.com/slsa-framework/attester", want: slsa.StatusFail, wantMessage: "not the expected source",
 		},
 		{
 			name: "second signer binds", fixture: "gha-generic-v02-tag.intoto.json",

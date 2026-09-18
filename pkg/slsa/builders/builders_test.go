@@ -171,7 +171,7 @@ func TestEmbeddedRegistry(t *testing.T) {
 	t.Parallel()
 	r, err := builders.LoadEmbedded()
 	require.NoError(t, err)
-	assert.Equal(t, 6, r.Len())
+	assert.Equal(t, 7, r.Len())
 
 	generator := r.ForSigner(githubSigner(generatorID + "@refs/tags/v1.2.2"))
 	require.NotNil(t, generator)
@@ -184,6 +184,17 @@ func TestEmbeddedRegistry(t *testing.T) {
 	require.NotNil(t, delegator)
 	assert.True(t, delegator.Delegated)
 	assert.Same(t, delegator, r.Lookup(delegatorID+"@refs/tags/v2.1.0"))
+
+	// The attester is an observer, found by its signer identity even at a
+	// branch ref; builder.id never names it, so Lookup finds the platform
+	// entry instead.
+	attesterID := "https://github.com/slsa-framework/actions/.github/workflows/attest_actions.yml"
+	attester := r.ForSigner(githubSigner(attesterID + "@refs/heads/main"))
+	require.NotNil(t, attester)
+	assert.Equal(t, attesterID, attester.ID)
+	assert.True(t, attester.Observer)
+	assert.True(t, attester.SourceRepositoryBound)
+	assert.NotEqual(t, attester, r.Lookup("https://github.com/some/repo/.github/workflows/build.yml@refs/heads/main"))
 
 	// A BYOB custom builder and a GitHub artifact attestation workflow are
 	// both plain GitHub workflows to the registry.

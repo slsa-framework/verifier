@@ -1,0 +1,70 @@
+{
+  "_type": "https://in-toto.io/Statement/v1",
+  "subject": [
+    {
+      "name": "slsa-attester-v0.1.0-rc.3-darwin-arm64",
+      "uri": "https://github.com/slsa-framework/attester/releases/download/v0.1.0-rc.3/slsa-attester-v0.1.0-rc.3-darwin-arm64",
+      "digest": {
+        "sha256": "752bea2aec22d702d7783e054631d6724cdb9886dcbf372fa2cf17031a01c896"
+      }
+    },
+    {
+      "name": "slsa-attester-v0.1.0-rc.3-linux-amd64",
+      "uri": "https://github.com/slsa-framework/attester/releases/download/v0.1.0-rc.3/slsa-attester-v0.1.0-rc.3-linux-amd64",
+      "digest": {
+        "sha256": "9206798750e15d42c3d63e9765a36cc526efc341392ab9d8b3869acc64630999"
+      }
+    },
+    {
+      "name": "slsa-attester-v0.1.0-rc.3-linux-arm64",
+      "uri": "https://github.com/slsa-framework/attester/releases/download/v0.1.0-rc.3/slsa-attester-v0.1.0-rc.3-linux-arm64",
+      "digest": {
+        "sha256": "96bbd2384f4944bae969d84c53de159a1bec38c43964bfea65919ea4c6ac2df5"
+      }
+    },
+    {
+      "name": "slsa-attester-v0.1.0-rc.3-windows-amd64.exe",
+      "uri": "https://github.com/slsa-framework/attester/releases/download/v0.1.0-rc.3/slsa-attester-v0.1.0-rc.3-windows-amd64.exe",
+      "digest": {
+        "sha256": "fdc99c4267238a65d9c6e2ab528d81fd804123247bfe9f36d720320dbf4460c2"
+      }
+    },
+    {
+      "name": "slsa-framework-attester.spdx.json",
+      "uri": "https://github.com/slsa-framework/attester/releases/download/v0.1.0-rc.3/slsa-framework-attester.spdx.json",
+      "digest": {
+        "sha256": "6a577485ed3b985c9dd72af79b5642beccd1515eaac1a36bcbeee4ba85dacfc1"
+      }
+    }
+  ],
+  "predicateType": "https://slsa.dev/provenance/v1",
+  "predicate": {
+    "buildDefinition": {
+      "buildType": "https://slsa.dev/buildtypes/watcher/v1",
+      "externalParameters": {
+        "event": "push",
+        "ref": "refs/tags/v0.1.0-rc.3",
+        "repository": "https://github.com/slsa-framework/attester",
+        "workflow": ".github/workflows/release.yaml"
+      },
+      "resolvedDependencies": [
+        {
+          "digest": {
+            "gitCommit": "2e9a4ecb896a8a2f1bc3bc78324ad1a314cbd5cf"
+          },
+          "uri": "git+https://github.com/slsa-framework/attester@refs/tags/v0.1.0-rc.3"
+        }
+      ]
+    },
+    "runDetails": {
+      "builder": {
+        "id": "https://github.com/slsa-framework/attester/.github/workflows/release.yaml@refs/tags/v0.1.0-rc.3"
+      },
+      "metadata": {
+        "finishedOn": "2026-09-18T05:16:55Z",
+        "invocationId": "https://github.com/slsa-framework/attester/actions/runs/35309884941/attempts/1",
+        "startedOn": "2026-09-18T05:12:16Z"
+      }
+    }
+  }
+}

@@ -54,6 +54,22 @@ builders:
     ref: semver-tag
     delegated: true
     sourceRepositoryBound: true
+  - id: https://github.com/slsa-framework/actions/.github/workflows/attest_actions.yml
+    title: SLSA build attester
+    description: |
+      The SLSA project's watcher: a reusable workflow that observes the
+      calling workflow's run, waits for its jobs and attests the
+      artifacts they produced. The certificate proves the attester ran,
+      and its build config URI records the workflow whose run it
+      observed — the workflow builder.id names — so the binding proves
+      that workflow really ran. Whether to trust it is the caller's
+      decision.
+    issuer: https://token.actions.githubusercontent.com
+    # Tighten to semver-tag once slsa-framework/actions tags releases and
+    # callers pin the workflow.
+    ref: any
+    observer: true
+    sourceRepositoryBound: true
   - id: https://github.com/
     idMatch: prefix
     title: GitHub Actions workflow
