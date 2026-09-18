@@ -28,7 +28,11 @@ provenance to be signed by the build platform.
    For an ordinary entry, the builder named in `builder.id` must be that
    builder, at the same ref the signer ran at. For a **delegated** entry
    (a builder that runs other builders), `builder.id` names the delegated
-   builder and is not compared with the signer at all.
+   builder and is not compared with the signer at all. For an **observer**
+   entry (a watcher that attests runs it observed), `builder.id` must name
+   the workflow the signing certificate's build config extension records —
+   the workflow whose run the observer attested — which proves that
+   workflow really ran.
 3. The signer's ref must satisfy the entry's **ref policy**, so a builder
    running from a branch is not mistaken for the released builder its id
    names.
@@ -42,6 +46,8 @@ provenance to be signed by the build platform.
 | The statement carries no verified signature | `SKIP` — builder.id stays a claim; `--require-signatures` decides whether that is acceptable |
 | A verified signer is the builder's signer, at an allowed ref, same release, right source repository | `PASS` |
 | A verified signer is a delegated builder's signer | `PASS` — the delegated builder's trust is `trusted_builders`' decision |
+| A verified signer is an observer whose certificate names the workflow `builder.id` claims | `PASS` — the certificate proves that workflow's run was observed |
+| An observer's certificate names another workflow, another ref, or no workflow at all | `FAIL` |
 | The builder is known but the signer is someone else | `FAIL` |
 | The builder's own signer, at another ref or a ref the policy rejects | `FAIL` |
 | A known builder's signer signed provenance naming a different builder | `FAIL` |
@@ -84,14 +90,22 @@ certificate subject names the workflow and its ref
 and the certificate's source repository extension names the repository
 whose workflow requested it.
 
-| Builder | Ref policy | Delegated | Source bound |
+| Builder | Ref policy | Kind | Source bound |
 |---|---|---|---|
-| `…/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml` | release tag | no | yes |
-| `…/slsa-github-generator/.github/workflows/builder_go_slsa3.yml` | release tag | no | yes |
-| `…/slsa-github-generator/.github/workflows/builder_container-based_slsa3.yml` | release tag | no | yes |
-| `…/slsa-github-generator/.github/workflows/delegator_generic_slsa3.yml` | release tag | **yes** | yes |
-| `…/slsa-github-generator/.github/workflows/delegator_lowperms-generic_slsa3.yml` | release tag | **yes** | yes |
-| `https://github.com/` (prefix) | any | no | yes |
+| `…/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml` | release tag | builder | yes |
+| `…/slsa-github-generator/.github/workflows/builder_go_slsa3.yml` | release tag | builder | yes |
+| `…/slsa-github-generator/.github/workflows/builder_container-based_slsa3.yml` | release tag | builder | yes |
+| `…/slsa-github-generator/.github/workflows/delegator_generic_slsa3.yml` | release tag | **delegator** | yes |
+| `…/slsa-github-generator/.github/workflows/delegator_lowperms-generic_slsa3.yml` | release tag | **delegator** | yes |
+| `…/actions/.github/workflows/attest_actions.yml` | any | **observer** | yes |
+| `https://github.com/` (prefix) | any | platform | yes |
+
+The attester entry is the [SLSA build attester](https://github.com/slsa-framework/attester)'s
+reusable workflow, an observer: it watches the calling workflow's run and
+attests the artifacts it produced, and the binding proves `builder.id`
+through the certificate's build config extension, which records the
+calling workflow. Its ref policy is `any` until slsa-framework/actions
+tags releases.
 
 The last entry covers any GitHub Actions workflow signing its own
 provenance, as GitHub's artifact attestations and build-your-own-builder
@@ -132,6 +146,7 @@ builders:
 | `signer` | one of `issuer`/`signer` | A full identity spec when the signer cannot be derived: `sigstore::<issuer>::<subject>`, `sigstore(identityMatch=prefix)::<issuer>::<subject-prefix>`, `key::<type>::<id>`, `spiffe://…`. Matchers: `exact`, `regex`, `prefix`, `glob`. |
 | `ref` | no | `any` (default) or `semver-tag`: the ref after `@` in the signer's subject must be `refs/tags/vX.Y.Z` (a prerelease suffix is fine, build metadata and `v1.2` are not). |
 | `delegated` | no | The entry is a delegator. Its certificate proves the delegator ran; `builder.id` names the delegated builder and is not compared with the signer. |
+| `observer` | no | The entry is an observer: `id` names its own workflow (matched by signer, exact only), and `builder.id` must name the workflow the certificate's build config extension records — the workflow whose run it observed. Mutually exclusive with `delegated`. |
 | `sourceRepositoryBound` | no | The signing certificate's source repository is the repository the artifact was built from, and is compared with `expected_source` when given. |
 
 Entries are validated on load: an empty id, an id carrying a ref, an

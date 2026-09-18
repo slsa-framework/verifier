@@ -158,7 +158,8 @@ fails. Without any, the attestation is verified on its content alone.
 
 A signed attestation's builder.id is bound to the identity that signed
 it through the builder registry, which knows the slsa-github-generator
-builders and any GitHub Actions workflow signing its own provenance.
+builders, the SLSA build attester observing runs from its reusable
+workflow, and any GitHub Actions workflow signing its own provenance.
 Bind a builder of your own with --builder <id>=<signer spec> (or
 <id>=<OIDC issuer>, for workflow-style identities whose subject is the
 builder id) or a registry file passed with --builders; naming the
