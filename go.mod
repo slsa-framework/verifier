@@ -3,13 +3,13 @@ module github.com/slsa-framework/verifier
 go 1.26.0
 
 require (
+	cel.dev/cel-go v0.32.0
 	github.com/carabiner-dev/attestation v0.2.1
 	github.com/carabiner-dev/collector v0.3.16
 	github.com/carabiner-dev/command v0.3.2
 	github.com/carabiner-dev/hasher v0.2.4
 	github.com/carabiner-dev/signer v0.6.3-0.20260918053410-bc4fb95601f7
 	github.com/fatih/color v1.19.0
-	github.com/google/cel-go v0.28.0
 	github.com/in-toto/attestation v1.2.0
 	github.com/slsa-framework/source-tool v0.7.0
 	github.com/spf13/cobra v1.10.2
