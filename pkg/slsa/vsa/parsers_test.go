@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	collectorpred "github.com/carabiner-dev/collector/predicate"
+	vsav1 "github.com/in-toto/attestation/go/predicates/vsa/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -62,4 +63,27 @@ func TestV1ParserAcceptsCamelCase(t *testing.T) {
 	pred, err := v1Parser{}.Parse(camel)
 	require.NoError(t, err)
 	assert.Equal(t, PredicateTypeV1, string(pred.GetType()))
+}
+
+// TestV1ParserAcceptsUnknownFields confirms unknown extension fields are tolerated.
+func TestV1ParserAcceptsUnknownFields(t *testing.T) {
+	t.Parallel()
+
+	payload := []byte(`{
+  "verifier": {"id": "https://verify.example.com"},
+  "resourceUri": "pkg:oci/foo@sha256:abc",
+  "verificationResult": "PASSED",
+  "verifiedLevels": ["SLSA_BUILD_LEVEL_3"],
+  "slsaVersion": "1.0",
+  "//example.com/vsa/verification_global_id": "0x12345678",
+  "customProducerField": {"key": "val"}
+}`)
+	pred, err := v1Parser{}.Parse(payload)
+	require.NoError(t, err)
+	assert.Equal(t, PredicateTypeV1, string(pred.GetType()))
+	msg, ok := pred.GetParsed().(*vsav1.VerificationSummary)
+	require.True(t, ok, "parsed type should be *vsav1.VerificationSummary")
+	assert.Equal(t, "https://verify.example.com", msg.GetVerifier().GetId())
+	assert.Equal(t, "pkg:oci/foo@sha256:abc", msg.GetResourceUri())
+	assert.Equal(t, "PASSED", msg.GetVerificationResult())
 }

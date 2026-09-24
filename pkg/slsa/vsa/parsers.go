@@ -58,7 +58,8 @@ type v1Parser struct{}
 // Parse implements attestation.PredicateParser.
 func (v1Parser) Parse(data []byte) (attestation.Predicate, error) {
 	msg := &vsav1.VerificationSummary{}
-	if err := protojson.Unmarshal(data, msg); err != nil {
+	// Discard unknown producer extension fields rather than rejecting the VSA.
+	if err := (protojson.UnmarshalOptions{DiscardUnknown: true}).Unmarshal(data, msg); err != nil {
 		if isWrongFormat(err) {
 			return nil, attestation.ErrNotCorrectFormat
 		}
