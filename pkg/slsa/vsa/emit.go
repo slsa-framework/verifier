@@ -4,6 +4,7 @@
 package vsa
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -40,6 +41,16 @@ type SummaryInput struct {
 	// against in policy.uri.
 	PolicyURI string
 
+	// PolicyDigest, when set, records the digest of that policy in
+	// policy.digest, keyed by algorithm, e.g. {"sha256": "..."}. It
+	// requires PolicyURI, because the spec requires policy.uri.
+	PolicyDigest map[string]string
+
+	// InputAttestations lists the attestations the verification
+	// consumed as evidence (inputAttestations). Each needs a URI and a
+	// digest. Empty is omitted.
+	InputAttestations []InputAttestation
+
 	// VerificationResult is "PASSED" or "FAILED" (ResultPassed /
 	// ResultFailed).
 	VerificationResult string
@@ -56,6 +67,21 @@ type SummaryInput struct {
 // predicate from in. The returned statement carries no signature; render
 // it with Marshal before writing it out.
 func (in *SummaryInput) Statement() (*intoto.Statement, error) {
+	if len(in.PolicyDigest) > 0 && in.PolicyURI == "" {
+		return nil, errors.New("VSA policy digest without a policy URI")
+	}
+	if err := validDigest(in.PolicyDigest); err != nil {
+		return nil, fmt.Errorf("VSA policy digest: %w", err)
+	}
+	for i, att := range in.InputAttestations {
+		if att.URI == "" || len(att.Digest) == 0 {
+			return nil, fmt.Errorf("VSA input attestation %d needs a URI and a digest", i)
+		}
+		if err := validDigest(att.Digest); err != nil {
+			return nil, fmt.Errorf("VSA input attestation %s: %w", att.URI, err)
+		}
+	}
+
 	pred := &vsav1.VerificationSummary{
 		Verifier:           &vsav1.VerificationSummary_Verifier{Id: in.VerifierID},
 		ResourceUri:        in.ResourceURI,
@@ -67,7 +93,16 @@ func (in *SummaryInput) Statement() (*intoto.Statement, error) {
 		pred.TimeVerified = timestamppb.New(in.TimeVerified)
 	}
 	if in.PolicyURI != "" {
-		pred.Policy = &vsav1.VerificationSummary_Policy{Uri: in.PolicyURI}
+		pred.Policy = &vsav1.VerificationSummary_Policy{
+			Uri:    in.PolicyURI,
+			Digest: in.PolicyDigest,
+		}
+	}
+	for _, att := range in.InputAttestations {
+		pred.InputAttestations = append(pred.InputAttestations, &vsav1.VerificationSummary_InputAttestation{
+			Uri:    att.URI,
+			Digest: att.Digest,
+		})
 	}
 
 	predStruct, err := predicateStruct(pred)
@@ -97,6 +132,17 @@ func predicateStruct(pred *vsav1.VerificationSummary) (*structpb.Struct, error) 
 		return nil, fmt.Errorf("building VSA predicate struct: %w", err)
 	}
 	return out, nil
+}
+
+// validDigest reports an error for a digest set with an empty algorithm
+// or value.
+func validDigest(digest map[string]string) error {
+	for algorithm, value := range digest {
+		if algorithm == "" || value == "" {
+			return fmt.Errorf("empty algorithm or value in %v", digest)
+		}
+	}
+	return nil
 }
 
 // Marshal renders an in-toto Statement as indented JSON suitable for
