@@ -167,6 +167,7 @@ func (v *Verifier) Verify(ctx context.Context, statement attestation.Statement, 
 		return nil, fmt.Errorf("computing result: %w", err)
 	}
 	if result != nil {
+		capBuilderLevel(&vopts, statement, result)
 		// Record the spec version the core category resolved to so
 		// callers (and emitted VSAs) can state which criteria applied.
 		result.SpecVersion = controls.SpecVersionOf(category)

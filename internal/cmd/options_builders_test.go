@@ -57,3 +57,23 @@ func TestBuilderOptionsValidate(t *testing.T) {
 		assert.Nil(t, opts.Registry())
 	})
 }
+
+func TestBuilderOptionsLevels(t *testing.T) {
+	t.Parallel()
+
+	opts := &builderOptions{LevelSpecs: []string{
+		"https://ci.example.com/builder=1",
+		"https://ci.example.com/build?config=x=SLSA_BUILD_LEVEL_2",
+	}}
+	require.NoError(t, opts.Validate())
+	assert.Equal(t, map[string]int{
+		"https://ci.example.com/builder":        1,
+		"https://ci.example.com/build?config=x": 2,
+	}, opts.Levels())
+	assert.Nil(t, opts.Registry())
+
+	for _, spec := range []string{"https://ci.example.com/builder", "=1", "https://ci.example.com/builder=0", "https://ci.example.com/builder=4"} {
+		opts := &builderOptions{LevelSpecs: []string{spec}}
+		require.Error(t, opts.Validate(), spec)
+	}
+}

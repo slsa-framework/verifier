@@ -176,6 +176,13 @@ builder.id reported as unproven.`,
   %[1]s build --param expected_source:github.com/example/repo \
       --param trusted_builders:[https://ci.example.com/builder] \
       --builder https://ci.example.com/builder=spiffe://example.com/ci/builder \
+      --skip-buildtype-checks provenance.dsse.json
+
+  # Hold a builder that signs its own provenance to the trusted builder
+  # check, but never report more than the level 1 it reaches
+  %[1]s build --param expected_source:github.com/example/repo \
+      --param trusted_builders:[https://ci.example.com/builder] \
+      --builder-level https://ci.example.com/builder=1 --level 2 \
       --skip-buildtype-checks provenance.dsse.json`, appname),
 		SilenceUsage:  false,
 		SilenceErrors: true,
@@ -260,6 +267,7 @@ func runBuild(cmd *cobra.Command, opts *buildOptions) error {
 		slsa.WithTrack(controls.TrackBuild),
 		slsa.WithSpecVersion(opts.Spec),
 		slsa.WithMinLevel(opts.MinLevel),
+		slsa.WithBuilderLevels(opts.Levels()),
 		slsa.WithVerifierID(opts.VerifierID),
 	)
 	// Signature/identity failures from the verification layer are a
