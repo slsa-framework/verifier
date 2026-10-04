@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright 2026 Carabiner Systems, Inc
+// SPDX-FileCopyrightText: Copyright 2026 The SLSA Authors
 // SPDX-License-Identifier: Apache-2.0
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
