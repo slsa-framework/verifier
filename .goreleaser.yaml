@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright 2026 Carabiner Systems, Inc
+# SPDX-FileCopyrightText: Copyright 2026 The SLSA Authors
 # SPDX-License-Identifier: Apache-2.0
 
 project_name: slsa-verifier
@@ -35,6 +35,8 @@ builds:
         goarch: amd64
     flags:
       - -trimpath
+    ldflags:
+      - -X github.com/slsa-framework/verifier/internal/cmd.version={{ .Tag }}
 
 archives:
   - formats: binary

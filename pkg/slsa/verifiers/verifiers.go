@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright 2026 Carabiner Systems, Inc
+// SPDX-FileCopyrightText: Copyright 2026 The SLSA Authors
 // SPDX-License-Identifier: Apache-2.0
 
 // Package verifiers holds the registry of VSA issuers the verifier can

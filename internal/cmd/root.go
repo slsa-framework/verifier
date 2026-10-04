@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright 2026 Carabiner Systems, Inc
+// SPDX-FileCopyrightText: Copyright 2026 The SLSA Authors
 // SPDX-License-Identifier: Apache-2.0
 
 package cmd
@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"runtime/debug"
 
 	"github.com/spf13/cobra"
 )
@@ -25,6 +26,23 @@ var ErrVerifyFailed = errors.New("attestation verification failed")
 
 const appname = "slsa-verifier"
 
+// version is the release this binary was built from. Releases set it at
+// build time (-ldflags, see .goreleaser.yaml); a binary built with
+// `go install module@version` reads it from the module information instead,
+// and anything else reports "devel".
+var version = "devel"
+
+// resolvedVersion is what --version prints.
+func resolvedVersion() string {
+	if version != "devel" {
+		return version
+	}
+	if info, ok := debug.ReadBuildInfo(); ok && info.Main.Version != "" && info.Main.Version != "(devel)" {
+		return info.Main.Version
+	}
+	return version
+}
+
 var rootCmd = &cobra.Command{
 	Short: fmt.Sprintf("%s: verify SLSA build and source attestations", appname),
 	Long: fmt.Sprintf(`
@@ -33,6 +51,7 @@ attestations against the SLSA spec-defined controls and any user-supplied
 controls.
 `, appname),
 	Use:           appname,
+	Version:       resolvedVersion(),
 	SilenceUsage:  false,
 	SilenceErrors: true,
 }
