@@ -4,6 +4,7 @@
 package slsa
 
 import (
+	"fmt"
 	"slices"
 
 	sapi "github.com/carabiner-dev/signer/api/v1"
@@ -149,6 +150,19 @@ type VerificationOptions struct {
 	// control must pass. Controls without a declared level, buildType
 	// controls and user controls are always required.
 	MinLevel int
+
+	// BuilderLevels are the highest SLSA build levels the caller trusts
+	// builders to reach, keyed by builder id like the trusted_builders
+	// parameter: an id without an @ also matches the builder at any ref.
+	// The controls only see what the provenance records, not how
+	// isolated its builder is or who generated the provenance, so the
+	// computed level of provenance by one of these builders is capped at
+	// its level. MinLevel is checked before the cap. Builders without an
+	// entry are not capped. The builder id is what the provenance claims,
+	// so a level only holds when the id is bound to the signer of its
+	// builder (see the builder registry): otherwise any trusted signer can
+	// claim the id of a builder with a higher level.
+	BuilderLevels map[string]int
 }
 
 // DefaultVerificationOptions returns the default per-call options.
@@ -301,6 +315,25 @@ func WithSpecVersion(version string) VerificationOption {
 func WithMinLevel(level int) VerificationOption {
 	return func(o *VerificationOptions) error {
 		o.MinLevel = level
+		return nil
+	}
+}
+
+// WithBuilderLevels sets the highest SLSA build level the caller trusts
+// each builder to reach, see VerificationOptions.BuilderLevels. A builder
+// whose builds generate and sign their own provenance, for example, can
+// record every field the level 3 controls check, yet reaches level 1
+// only. WithMinLevel still selects the controls that must pass, so a
+// level 1 builder can be held to the level 2 trusted builder check. The
+// levels only hold for builder ids bound to their signers.
+func WithBuilderLevels(levels map[string]int) VerificationOption {
+	return func(o *VerificationOptions) error {
+		for id, level := range levels {
+			if id == "" || level < 1 || level > maxSLSALevel {
+				return fmt.Errorf("builder level %d of %q: builders need an id and a level from 1 to %d", level, id, maxSLSALevel)
+			}
+		}
+		o.BuilderLevels = levels
 		return nil
 	}
 }
