@@ -4,6 +4,8 @@
 package vsa
 
 import (
+	"encoding/json"
+	"reflect"
 	"testing"
 	"time"
 
@@ -86,5 +88,150 @@ func TestSummaryInputStatement(t *testing.T) {
 	}
 	if !got.Passed() {
 		t.Errorf("normalized VSA not passing: %+v", got)
+	}
+}
+
+// TestSummaryInputStatementOptionalFields checks the wire names of
+// policy.digest and inputAttestations, and that neither is emitted when
+// unset.
+func TestSummaryInputStatementOptionalFields(t *testing.T) {
+	t.Parallel()
+
+	base := SummaryInput{
+		VerifierID:         "https://example.com/verifier",
+		VerificationResult: ResultPassed,
+	}
+	full := base
+	full.PolicyURI = "https://example.com/policy.yaml"
+	full.PolicyDigest = map[string]string{"gitCommit": "0123abcd"}
+	full.InputAttestations = []InputAttestation{
+		{URI: "https://example.com/provenance.json", Digest: map[string]string{"sha256": "abc"}},
+	}
+
+	for _, tc := range []struct {
+		name string
+		in   SummaryInput
+		want string
+	}{
+		{
+			name: "unset",
+			in:   base,
+			want: `{
+				"verifier": {"id": "https://example.com/verifier"},
+				"verificationResult": "PASSED"
+			}`,
+		},
+		{
+			name: "set",
+			in:   full,
+			want: `{
+				"verifier": {"id": "https://example.com/verifier"},
+				"policy": {
+					"uri": "https://example.com/policy.yaml",
+					"digest": {"gitCommit": "0123abcd"}
+				},
+				"inputAttestations": [{
+					"uri": "https://example.com/provenance.json",
+					"digest": {"sha256": "abc"}
+				}],
+				"verificationResult": "PASSED"
+			}`,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			stmt, err := tc.in.Statement()
+			if err != nil {
+				t.Fatalf("Statement: %v", err)
+			}
+			data, err := Marshal(stmt)
+			if err != nil {
+				t.Fatalf("Marshal: %v", err)
+			}
+
+			var got struct {
+				Predicate map[string]any `json:"predicate"`
+			}
+			if err := json.Unmarshal(data, &got); err != nil {
+				t.Fatalf("unmarshal statement: %v", err)
+			}
+			var want map[string]any
+			if err := json.Unmarshal([]byte(tc.want), &want); err != nil {
+				t.Fatalf("unmarshal want: %v", err)
+			}
+			if !reflect.DeepEqual(got.Predicate, want) {
+				t.Errorf("predicate = %v, want %v", got.Predicate, want)
+			}
+		})
+	}
+
+	// The read side parses what we emit, including the new fields.
+	stmt, err := full.Statement()
+	if err != nil {
+		t.Fatalf("Statement: %v", err)
+	}
+	predJSON, err := protojson.Marshal(stmt.GetPredicate())
+	if err != nil {
+		t.Fatalf("marshal predicate struct: %v", err)
+	}
+	pred, err := v1Parser{}.Parse(predJSON)
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	got, err := FromParsed(PredicateTypeV1, pred.GetParsed())
+	if err != nil {
+		t.Fatalf("FromParsed: %v", err)
+	}
+	if !reflect.DeepEqual(got.Policy.Digest, full.PolicyDigest) {
+		t.Errorf("policy.digest = %v, want %v", got.Policy.Digest, full.PolicyDigest)
+	}
+	if !reflect.DeepEqual(got.InputAttestations, full.InputAttestations) {
+		t.Errorf("inputAttestations = %v, want %v", got.InputAttestations, full.InputAttestations)
+	}
+}
+
+// TestSummaryInputStatementInvalid checks that a policy digest needs a
+// policy URI and input attestations need a URI and a digest, as the spec
+// requires.
+func TestSummaryInputStatementInvalid(t *testing.T) {
+	t.Parallel()
+
+	for _, tc := range []struct {
+		name string
+		in   SummaryInput
+	}{
+		{
+			name: "policy digest without uri",
+			in:   SummaryInput{PolicyDigest: map[string]string{"sha256": "def"}},
+		},
+		{
+			name: "empty policy digest value",
+			in:   SummaryInput{PolicyURI: "https://example.com/policy.yaml", PolicyDigest: map[string]string{"sha256": ""}},
+		},
+		{
+			name: "empty input attestation",
+			in:   SummaryInput{InputAttestations: []InputAttestation{{}}},
+		},
+		{
+			name: "input attestation without digest",
+			in:   SummaryInput{InputAttestations: []InputAttestation{{URI: "https://example.com/provenance.json"}}},
+		},
+		{
+			name: "empty input attestation digest value",
+			in: SummaryInput{InputAttestations: []InputAttestation{
+				{URI: "https://example.com/provenance.json", Digest: map[string]string{"sha256": ""}},
+			}},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			tc.in.VerifierID = "https://example.com/verifier"
+			tc.in.VerificationResult = ResultPassed
+			if _, err := tc.in.Statement(); err == nil {
+				t.Fatal("Statement: expected an error")
+			}
+		})
 	}
 }
