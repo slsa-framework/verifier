@@ -80,7 +80,7 @@ jobs:
       # Run a released, provenance-verified attester rather than building
       # it from source.
       build-from-source: false
-      version: v0.1.0-rc.3
+      version: v0.1.0
 
   # Publish the provenance to the release. The install/verifier action
   # verifies the downloaded binaries against this file, so it must land on
