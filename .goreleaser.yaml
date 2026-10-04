@@ -35,6 +35,8 @@ builds:
         goarch: amd64
     flags:
       - -trimpath
+    ldflags:
+      - -X github.com/slsa-framework/verifier/internal/cmd.version={{ .Tag }}
 
 archives:
   - formats: binary
