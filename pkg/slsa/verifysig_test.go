@@ -7,7 +7,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/carabiner-dev/attestation"
+	"github.com/policylabs/attestation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -8,10 +8,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/carabiner-dev/attestation"
-	"github.com/carabiner-dev/collector/envelope"
 	provenancev1 "github.com/in-toto/attestation/go/predicates/provenance/v1"
 	intoto "github.com/in-toto/attestation/go/v1"
+	"github.com/policylabs/attestation"
+	"github.com/policylabs/collector/envelope"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/structpb"

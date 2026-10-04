@@ -11,9 +11,9 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/carabiner-dev/attestation"
-	sapi "github.com/carabiner-dev/signer/api/v1"
 	intoto "github.com/in-toto/attestation/go/v1"
+	"github.com/policylabs/attestation"
+	sapi "github.com/policylabs/signer/api/v1"
 	"google.golang.org/protobuf/proto"
 
 	"github.com/slsa-framework/verifier/pkg/slsa/builders"

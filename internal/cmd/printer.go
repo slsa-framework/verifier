@@ -10,8 +10,8 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/carabiner-dev/attestation"
 	"github.com/fatih/color"
+	"github.com/policylabs/attestation"
 
 	"github.com/slsa-framework/verifier/pkg/slsa"
 	"github.com/slsa-framework/verifier/pkg/subject"

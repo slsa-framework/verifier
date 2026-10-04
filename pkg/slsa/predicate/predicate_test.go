@@ -6,10 +6,10 @@ package predicate_test
 import (
 	"testing"
 
-	"github.com/carabiner-dev/attestation"
-	collectorpred "github.com/carabiner-dev/collector/predicate"
 	provenancev02 "github.com/in-toto/attestation/go/predicates/provenance/v02"
 	provenancev1 "github.com/in-toto/attestation/go/predicates/provenance/v1"
+	"github.com/policylabs/attestation"
+	collectorpred "github.com/policylabs/collector/predicate"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 

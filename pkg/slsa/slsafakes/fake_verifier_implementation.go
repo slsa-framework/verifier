@@ -5,7 +5,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/carabiner-dev/attestation"
+	"github.com/policylabs/attestation"
 	"github.com/slsa-framework/verifier/pkg/slsa"
 	"github.com/slsa-framework/verifier/pkg/slsa/builders"
 	"github.com/slsa-framework/verifier/pkg/slsa/controls"

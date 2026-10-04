@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"strings"
 
-	sapi "github.com/carabiner-dev/signer/api/v1"
+	sapi "github.com/policylabs/signer/api/v1"
 	"golang.org/x/mod/semver"
 )
 

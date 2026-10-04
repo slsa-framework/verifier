@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	signeroptions "github.com/carabiner-dev/signer/options"
+	signeroptions "github.com/policylabs/signer/options"
 	"github.com/spf13/cobra"
 
 	"github.com/slsa-framework/verifier/pkg/attestation"

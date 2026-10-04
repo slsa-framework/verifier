@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/carabiner-dev/attestation"
+	"github.com/policylabs/attestation"
 
 	"github.com/slsa-framework/verifier/pkg/slsa/eval"
 )

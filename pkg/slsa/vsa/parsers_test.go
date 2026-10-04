@@ -6,8 +6,8 @@ package vsa
 import (
 	"testing"
 
-	collectorpred "github.com/carabiner-dev/collector/predicate"
 	vsav1 "github.com/in-toto/attestation/go/predicates/vsa/v1"
+	collectorpred "github.com/policylabs/collector/predicate"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

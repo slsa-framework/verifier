@@ -7,10 +7,10 @@ import (
 	"errors"
 	"fmt"
 
-	cdattestation "github.com/carabiner-dev/attestation"
-	sapi "github.com/carabiner-dev/signer/api/v1"
-	"github.com/carabiner-dev/signer/key"
-	signeroptions "github.com/carabiner-dev/signer/options"
+	cdattestation "github.com/policylabs/attestation"
+	sapi "github.com/policylabs/signer/api/v1"
+	"github.com/policylabs/signer/key"
+	signeroptions "github.com/policylabs/signer/options"
 )
 
 // ErrSignatureRequired is returned by VerifySignatures when the

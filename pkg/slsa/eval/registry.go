@@ -7,6 +7,7 @@ import (
 	provenancev01 "github.com/in-toto/attestation/go/predicates/provenance/v01"
 	provenancev02 "github.com/in-toto/attestation/go/predicates/provenance/v02"
 	provenancev1 "github.com/in-toto/attestation/go/predicates/provenance/v1"
+	sourcetoolv1 "github.com/slsa-framework/protos/sourcetool/v1"
 	sourceprovenance "github.com/slsa-framework/source-tool/pkg/provenance"
 	"google.golang.org/protobuf/proto"
 )
@@ -16,18 +17,18 @@ import (
 // than via the protojson path used here, so they're not registered
 // in this map.
 const (
-	PredicateProvenanceV01    = "https://slsa.dev/provenance/v0.1"
-	PredicateProvenanceV02    = "https://slsa.dev/provenance/v0.2"
-	PredicateProvenanceV1     = "https://slsa.dev/provenance/v1"
-	PredicateSourceProvenance = sourceprovenance.SourceProvPredicateType
-	PredicateTagProvenance    = sourceprovenance.TagProvPredicateType
-
-	// The final (non-draft) source predicate types, published under the
-	// project's new name (source-tool, formerly slsa-source-poc). They
-	// carry the same payload as the v1-draft versions and parse into
-	// the same protos.
-	PredicateSourceProvenanceV1 = "https://github.com/slsa-framework/source-tool/source-provenance/v1"
-	PredicateTagProvenanceV1    = "https://github.com/slsa-framework/source-tool/tag-provenance/v1"
+	PredicateProvenanceV01 = "https://slsa.dev/provenance/v0.1"
+	PredicateProvenanceV02 = "https://slsa.dev/provenance/v0.2"
+	PredicateProvenanceV1  = "https://slsa.dev/provenance/v1"
+	// The source track predicate types come from the shared protos module,
+	// which defines both the final v1 types, published under the project.s
+	// new name (source-tool, formerly slsa-source-poc), and the draft types
+	// source-tool issued before the promotion. Both carry the same payload
+	// and parse into the same protos.
+	PredicateSourceProvenance   = sourcetoolv1.PredicateTypeSourceProvenanceDraft
+	PredicateTagProvenance      = sourcetoolv1.PredicateTypeTagProvenanceDraft
+	PredicateSourceProvenanceV1 = sourcetoolv1.PredicateTypeSourceProvenance
+	PredicateTagProvenanceV1    = sourcetoolv1.PredicateTypeTagProvenance
 )
 
 // PredicateFactory returns an empty proto.Message of the matching predicate type.

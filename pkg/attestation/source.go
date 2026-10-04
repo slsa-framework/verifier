@@ -9,10 +9,10 @@ import (
 	"os"
 	"strings"
 
-	cdattestation "github.com/carabiner-dev/attestation"
-	"github.com/carabiner-dev/collector/envelope"
-	"github.com/carabiner-dev/collector/repository/filesystem"
-	"github.com/carabiner-dev/collector/repository/jsonl"
+	cdattestation "github.com/policylabs/attestation"
+	"github.com/policylabs/collector/envelope"
+	"github.com/policylabs/collector/repository/filesystem"
+	"github.com/policylabs/collector/repository/jsonl"
 )
 
 // Fetch loads the attestations at path, in order: every attestation
