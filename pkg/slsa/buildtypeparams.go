@@ -10,7 +10,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/carabiner-dev/attestation"
+	"github.com/policylabs/attestation"
 
 	"github.com/slsa-framework/verifier/pkg/slsa/controls"
 	"github.com/slsa-framework/verifier/pkg/slsa/eval"

@@ -16,9 +16,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/carabiner-dev/attestation"
 	"github.com/carabiner-dev/hasher"
 	intoto "github.com/in-toto/attestation/go/v1"
+	"github.com/policylabs/attestation"
 )
 
 // Expected is an artifact the caller holds, identified by its digests.

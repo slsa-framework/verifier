@@ -7,8 +7,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/carabiner-dev/attestation"
 	provenancev1 "github.com/in-toto/attestation/go/predicates/provenance/v1"
+	"github.com/policylabs/attestation"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/structpb"

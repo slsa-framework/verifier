@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/carabiner-dev/attestation"
-	collectorpred "github.com/carabiner-dev/collector/predicate"
-	"github.com/carabiner-dev/collector/predicate/generic"
 	vsav1 "github.com/in-toto/attestation/go/predicates/vsa/v1"
+	"github.com/policylabs/attestation"
+	collectorpred "github.com/policylabs/collector/predicate"
+	"github.com/policylabs/collector/predicate/generic"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	// Force pkg/slsa/predicate's init() to run before ours so it

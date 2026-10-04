@@ -9,7 +9,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/carabiner-dev/attestation"
+	"github.com/policylabs/attestation"
 	"github.com/spf13/cobra"
 
 	"github.com/slsa-framework/verifier/pkg/subject"

@@ -8,8 +8,8 @@ import (
 	"io"
 	"time"
 
-	cdattestation "github.com/carabiner-dev/attestation"
 	intoto "github.com/in-toto/attestation/go/v1"
+	cdattestation "github.com/policylabs/attestation"
 
 	"github.com/slsa-framework/verifier/pkg/slsa"
 	"github.com/slsa-framework/verifier/pkg/slsa/controls"

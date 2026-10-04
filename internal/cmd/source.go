@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	sapi "github.com/carabiner-dev/signer/api/v1"
-	signeroptions "github.com/carabiner-dev/signer/options"
 	intoto "github.com/in-toto/attestation/go/v1"
+	sapi "github.com/policylabs/signer/api/v1"
+	signeroptions "github.com/policylabs/signer/options"
 	"github.com/spf13/cobra"
 
 	"github.com/slsa-framework/verifier/pkg/attestation"

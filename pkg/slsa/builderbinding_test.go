@@ -7,8 +7,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/carabiner-dev/attestation"
-	sapi "github.com/carabiner-dev/signer/api/v1"
+	"github.com/policylabs/attestation"
+	sapi "github.com/policylabs/signer/api/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 

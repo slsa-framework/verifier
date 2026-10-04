@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 
-	sapi "github.com/carabiner-dev/signer/api/v1"
+	sapi "github.com/policylabs/signer/api/v1"
 )
 
 // ErrIdentityMismatch is returned by VerifyIdentity when none of the

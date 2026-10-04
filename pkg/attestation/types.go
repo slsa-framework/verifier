@@ -9,12 +9,12 @@
 // VerifySignatures primitives.
 //
 // Envelope and Statement are re-exported from
-// github.com/carabiner-dev/attestation as type aliases so callers
+// github.com/policylabs/attestation as type aliases so callers
 // only need to import this package.
 package attestation
 
 import (
-	cdattestation "github.com/carabiner-dev/attestation"
+	cdattestation "github.com/policylabs/attestation"
 )
 
 // Envelope is an in-toto attestation envelope (bare statement, DSSE,

@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/carabiner-dev/attestation"
-	sapi "github.com/carabiner-dev/signer/api/v1"
+	"github.com/policylabs/attestation"
+	sapi "github.com/policylabs/signer/api/v1"
 
 	"github.com/slsa-framework/verifier/pkg/slsa/builders"
 	"github.com/slsa-framework/verifier/pkg/slsa/eval"

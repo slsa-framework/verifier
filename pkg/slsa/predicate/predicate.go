@@ -4,7 +4,7 @@
 // Package predicate registers SLSA-only attestation.PredicateParser
 // implementations as the collector's global predicate parser registry.
 //
-// Importing this package replaces github.com/carabiner-dev/collector's
+// Importing this package replaces github.com/policylabs/collector's
 // shipped predicate parser map (which covers SBOMs, VEX, OSV, …) with the
 // SLSA build (v0.1, v0.2, v1.0) and SLSA source predicate types only,
 // using the upstream proto definitions from
@@ -17,9 +17,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/carabiner-dev/attestation"
-	collectorpred "github.com/carabiner-dev/collector/predicate"
-	"github.com/carabiner-dev/collector/predicate/generic"
+	"github.com/policylabs/attestation"
+	collectorpred "github.com/policylabs/collector/predicate"
+	"github.com/policylabs/collector/predicate/generic"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"github.com/slsa-framework/verifier/pkg/slsa/eval"

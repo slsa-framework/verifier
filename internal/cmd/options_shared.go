@@ -7,7 +7,7 @@ import (
 	"errors"
 
 	"github.com/carabiner-dev/command/keys"
-	signeroptions "github.com/carabiner-dev/signer/options"
+	signeroptions "github.com/policylabs/signer/options"
 	"github.com/spf13/cobra"
 )
 

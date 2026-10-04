@@ -6,8 +6,8 @@ package slsa
 import (
 	"testing"
 
-	"github.com/carabiner-dev/attestation"
-	"github.com/carabiner-dev/collector/envelope"
+	"github.com/policylabs/attestation"
+	"github.com/policylabs/collector/envelope"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 

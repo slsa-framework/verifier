@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/carabiner-dev/attestation"
+	"github.com/policylabs/attestation"
 )
 
 // ErrNotVSA is returned when a statement carries a predicate type

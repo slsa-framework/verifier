@@ -10,11 +10,11 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/carabiner-dev/attestation"
-	"github.com/carabiner-dev/collector/envelope"
 	provenancev01 "github.com/in-toto/attestation/go/predicates/provenance/v01"
 	provenancev02 "github.com/in-toto/attestation/go/predicates/provenance/v02"
 	provenancev1 "github.com/in-toto/attestation/go/predicates/provenance/v1"
+	"github.com/policylabs/attestation"
+	"github.com/policylabs/collector/envelope"
 	sourceprovenance "github.com/slsa-framework/source-tool/pkg/provenance"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

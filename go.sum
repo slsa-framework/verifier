@@ -91,8 +91,6 @@ github.com/bradleyjkemp/cupaloy/v2 v2.8.0 h1:any4BmKE+jGIaMpnU8YgH/I2LPiLBufr6oM
 github.com/bradleyjkemp/cupaloy/v2 v2.8.0/go.mod h1:bm7JXdkRd4BHJk9HpwqAI8BoAY1lps46Enkdqw6aRX0=
 github.com/carabiner-dev/attestation v0.2.1 h1:VhjV5YlO9TsW50Sr/Zd54bdbZhhDAqgxC3kB9z1I+3Q=
 github.com/carabiner-dev/attestation v0.2.1/go.mod h1:O84vF84RZG3pJO/6BYrPs718bZviHF5DKajP1HsrDpw=
-github.com/carabiner-dev/collector v0.3.16 h1:Tatp4tK/xWDluFwDqGfPPcYd9crCWm/0Ma+XlDAZ2Xs=
-github.com/carabiner-dev/collector v0.3.16/go.mod h1:G6neTqtRFOEjjOayE02bDWpLkcFB/gmbkfFteSliPcE=
 github.com/carabiner-dev/command v0.3.3 h1:TwS5tAa+fHhY83lX5XjyakmF12mmcoUSwc87ZLxnBdo=
 github.com/carabiner-dev/command v0.3.3/go.mod h1:winbJcNyPQwCnYegXBiNG2TbqXgE9Zyfh7DF9cW/r1s=
 github.com/carabiner-dev/hasher v0.2.4 h1:VaI04+FBHaNV/UEy0NmVoRg0pKLFeN76KPOHbTDvvhE=
@@ -103,12 +101,6 @@ github.com/carabiner-dev/openeox v1.0.0 h1:iVfs9jgu2s2Jrb95bJK5FWMx55qF3aHBk9RhU
 github.com/carabiner-dev/openeox v1.0.0/go.mod h1:+6i8M7PhtWk2jRtUC1anZnhmOr5cXKMLGYjwFcqPDa0=
 github.com/carabiner-dev/osv v0.1.2 h1:W5nZOGuygnqzB7YbGon6ab3iFHxFZZgzS3m7GEvYnfc=
 github.com/carabiner-dev/osv v0.1.2/go.mod h1:06cHx1aOdlb53feQxjBIRt3NSFfQKg1b1hrHHj/57QQ=
-github.com/carabiner-dev/policy v0.5.6 h1:zM203rdxnv2epn6czUs+CcAxQoyKqJDHqfiWLog+UtM=
-github.com/carabiner-dev/policy v0.5.6/go.mod h1:E0KFvUp/xVj6ZCoFHdrPJ1i/G2uUDlwpFn26J+z6M+8=
-github.com/carabiner-dev/predicates v0.5.4 h1:koiNmcr0IbjHpjywI/k9OGeEilTIKdMQyh5LZZJt4ok=
-github.com/carabiner-dev/predicates v0.5.4/go.mod h1:zHcoDfyIfH7WMOS0zpEKD+lBPikEw+/BNg6988g8c2I=
-github.com/carabiner-dev/signer v0.6.2 h1:Tww40YP4RKjLSKdgT5nXVRiqd3Czjvkwd2WRDE7ecJ0=
-github.com/carabiner-dev/signer v0.6.2/go.mod h1:xIeR0GMK3Hp9gYsd7dGO9W8EwjftWBk3/+flEle6o0Y=
 github.com/carabiner-dev/spdx3 v0.1.0 h1:Q6nMLXV0BhtqDQuwRDOaJDZR670TK4jdOvZqvTW/ctY=
 github.com/carabiner-dev/spdx3 v0.1.0/go.mod h1:d/t010TrZvYZBeYGpvHeId6QpRvGLlqK7cy0E81npPA=
 github.com/carabiner-dev/vcslocator v0.5.1 h1:IK75RcYgHp2HQ1qxAYlhzEJhYTFnqlP9zRJBhkTJ6GI=
@@ -355,6 +347,14 @@ github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINE
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 h1:Jamvg5psRIccs7FGNTlIRMkT8wgtp5eCXdBlqhYGL6U=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+github.com/policylabs/attestation v0.3.0 h1:tutwsvbq/T5F0Hwt8+M4u42Egk1qP8YbNx4GQ1hnTTA=
+github.com/policylabs/attestation v0.3.0/go.mod h1:z5gJ2M2aAkByYxMLqoOIY31KvAOIX+Ys4ZW2HavM3/o=
+github.com/policylabs/collector v0.4.0 h1:OoBVzKdI4dohk9jvSa644UtgxWsN9v4mIuRBYXfBLE4=
+github.com/policylabs/collector v0.4.0/go.mod h1:hiZbyhrcxsPbYFBD8EDR68/+ixtBNVT7zZ3jAMZC4jM=
+github.com/policylabs/policy v0.5.7-0.20261004134513-55e5473eef09 h1:xfDq4vrXBDv7EboreJwnDEwLn41cA2EqR9onfyBB9HE=
+github.com/policylabs/policy v0.5.7-0.20261004134513-55e5473eef09/go.mod h1:NArOX4b9LMPoc/aa8WPuZkEknGavT3IoYiyJ1rHxUBE=
+github.com/policylabs/predicates v0.6.0 h1:PgM9/8X8p/i4+Mr+VkijTb2ukeykrHmmjBnk1GuSq+M=
+github.com/policylabs/predicates v0.6.0/go.mod h1:g3sbkSBMWlEK8CPVFiUzSOfUoHWKLFYHr7xugF77Z60=
 github.com/policylabs/signer v0.6.4 h1:5dBt/X+MVbg1Is+IeH9rmTEV9R4J9c4/Egawe9Q61Bc=
 github.com/policylabs/signer v0.6.4/go.mod h1:oPcQlEW6uaiLCWTiwZLxF+KdQuSRhx3h6xVVEcTlFNE=
 github.com/protobom/protobom v0.6.2 h1:HJTEEnYyU1m3VWoVj0TkDqArWC3Q2CvSFXHUpCkRkoI=
@@ -401,6 +401,8 @@ github.com/sirupsen/logrus v1.10.2 h1:G2SED73/qrAu6YwbdxOD6peLkCBI3z7L+ykJFTXJBB
 github.com/sirupsen/logrus v1.10.2/go.mod h1:SLEg8TqYulVKKfIGHldVp2K2aYz2DKSVBq4g/H5bR7Q=
 github.com/skeema/knownhosts v1.3.2 h1:EDL9mgf4NzwMXCTfaxSD/o/a5fxDw/xL9nkU28JjdBg=
 github.com/skeema/knownhosts v1.3.2/go.mod h1:bEg3iQAuw+jyiw+484wwFJoKSLwcfd7fqRy+N0QTiow=
+github.com/slsa-framework/protos v0.0.0-20260928155916-9fa868b2a756 h1:JiWvV1tUpD33owzk0NCR6kH6DpUN1zBnwI5pHm0fSUM=
+github.com/slsa-framework/protos v0.0.0-20260928155916-9fa868b2a756/go.mod h1:qIbxqThHVEmY1OTDwTg+iXPd/CU9AXyab7BBvk1V2gk=
 github.com/slsa-framework/source-tool v0.7.0 h1:KtnKKP8AXSXsy78TYm8s8aBX/s8sj157ZN4P/ciBuuo=
 github.com/slsa-framework/source-tool v0.7.0/go.mod h1:32OhdH5r4Wzlf4NEmNztrldiuPdP+QeQCQMM6VE3Xpo=
 github.com/spdx/tools-golang v0.5.7 h1:+sWcKGnhwp3vLdMqPcLdA6QK679vd86cK9hQWH3AwCg=

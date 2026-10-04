@@ -11,8 +11,8 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	sapi "github.com/carabiner-dev/signer/api/v1"
 	"github.com/fatih/color"
+	sapi "github.com/policylabs/signer/api/v1"
 	"github.com/spf13/cobra"
 
 	"github.com/slsa-framework/verifier/pkg/attestation"

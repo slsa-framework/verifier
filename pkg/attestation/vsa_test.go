@@ -8,10 +8,10 @@ import (
 	"strings"
 	"testing"
 
-	cdattestation "github.com/carabiner-dev/attestation"
-	sapi "github.com/carabiner-dev/signer/api/v1"
 	vsav1 "github.com/in-toto/attestation/go/predicates/vsa/v1"
 	intoto "github.com/in-toto/attestation/go/v1"
+	cdattestation "github.com/policylabs/attestation"
+	sapi "github.com/policylabs/signer/api/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
