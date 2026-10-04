@@ -84,7 +84,7 @@ jobs:
 
   # Publish the provenance to the release. The install/verifier action
   # verifies the downloaded binaries against this file, so it must land on
-  # the release as attestations.jsonl.
+  # the release as attestations.intoto.jsonl.
   publish:
     needs: [release, provenance]
     runs-on: ubuntu-latest
@@ -103,5 +103,5 @@ jobs:
           GH_REPO: ${{ github.repository }}
           TAG_NAME: ${{ needs.release.outputs.tag_name }}
         run: |
-          mv provenance.intoto.json attestations.jsonl
-          gh release upload "${TAG_NAME}" attestations.jsonl
+          mv provenance.intoto.json attestations.intoto.jsonl
+          gh release upload "${TAG_NAME}" attestations.intoto.jsonl
