@@ -11,6 +11,7 @@ require (
 	github.com/carabiner-dev/signer v0.6.3-0.20260918053410-bc4fb95601f7
 	github.com/fatih/color v1.19.0
 	github.com/in-toto/attestation v1.2.0
+	github.com/slsa-framework/protos v0.0.0-20260905230943-612c99695f3b
 	github.com/slsa-framework/source-tool v0.7.0
 	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.12.1
@@ -152,3 +153,5 @@ require (
 )
 
 tool github.com/maxbrunsfeld/counterfeiter/v6
+
+replace github.com/slsa-framework/protos => ../protos
