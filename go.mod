@@ -12,7 +12,7 @@ require (
 	github.com/policylabs/collector v0.4.0
 	github.com/policylabs/signer v0.6.4
 	github.com/slsa-framework/protos v0.0.0-20260928155916-9fa868b2a756
-	github.com/slsa-framework/source-tool v0.7.0
+	github.com/slsa-framework/source-tool v0.7.1
 	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.12.1
 	golang.org/x/mod v0.41.0
