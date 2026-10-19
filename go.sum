@@ -403,8 +403,8 @@ github.com/skeema/knownhosts v1.3.2 h1:EDL9mgf4NzwMXCTfaxSD/o/a5fxDw/xL9nkU28Jjd
 github.com/skeema/knownhosts v1.3.2/go.mod h1:bEg3iQAuw+jyiw+484wwFJoKSLwcfd7fqRy+N0QTiow=
 github.com/slsa-framework/protos v0.0.0-20260928155916-9fa868b2a756 h1:JiWvV1tUpD33owzk0NCR6kH6DpUN1zBnwI5pHm0fSUM=
 github.com/slsa-framework/protos v0.0.0-20260928155916-9fa868b2a756/go.mod h1:qIbxqThHVEmY1OTDwTg+iXPd/CU9AXyab7BBvk1V2gk=
-github.com/slsa-framework/source-tool v0.7.0 h1:KtnKKP8AXSXsy78TYm8s8aBX/s8sj157ZN4P/ciBuuo=
-github.com/slsa-framework/source-tool v0.7.0/go.mod h1:32OhdH5r4Wzlf4NEmNztrldiuPdP+QeQCQMM6VE3Xpo=
+github.com/slsa-framework/source-tool v0.7.1 h1:JD6E7RXCrLXca8vMzfdErOMFn7CUg6DRGVrcMEF0aKs=
+github.com/slsa-framework/source-tool v0.7.1/go.mod h1:5OR3imAZwi+ICdBBVsVgHY9be43pQCjEKQKDyvxLTBs=
 github.com/spdx/tools-golang v0.5.7 h1:+sWcKGnhwp3vLdMqPcLdA6QK679vd86cK9hQWH3AwCg=
 github.com/spdx/tools-golang v0.5.7/go.mod h1:jg7w0LOpoNAw6OxKEzCoqPC2GCTj45LyTlVmXubDsYw=
 github.com/spf13/cobra v1.10.2 h1:DMTTonx5m65Ic0GOoRY2c16WCbHxOOw6xxezuLaBpcU=
