@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	cel.dev/cel-go v0.32.0
-	github.com/carabiner-dev/command v0.3.3
+	github.com/carabiner-dev/command v0.3.4
 	github.com/carabiner-dev/hasher v0.2.4
 	github.com/fatih/color v1.19.0
 	github.com/in-toto/attestation v1.2.0
