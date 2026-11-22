@@ -9,7 +9,7 @@ require (
 	github.com/fatih/color v1.19.0
 	github.com/in-toto/attestation v1.2.0
 	github.com/policylabs/attestation v0.3.0
-	github.com/policylabs/collector v0.4.1
+	github.com/policylabs/collector v0.4.2
 	github.com/policylabs/signer v0.6.8
 	github.com/slsa-framework/protos v0.0.0-20260928155916-9fa868b2a756
 	github.com/spf13/cobra v1.10.2
